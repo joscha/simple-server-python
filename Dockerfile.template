@@ -1,12 +1,14 @@
 # base-image for python on any machine using a template variable,
 # see more about dockerfile templates here:http://docs.resin.io/pages/deployment/docker-templates
-FROM resin/%%RESIN_MACHINE_NAME%%-python:3
+FROM resin/%%RESIN_MACHINE_NAME%%-python:2
 
 # Install prereqs
 RUN apt-get update && apt-get install -yq \
-    python-pip \
+    i2c-tools \
     python-smbus && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# RUN pip install --upgrade pip
 
 # Set our working directory
 WORKDIR /usr/src/app
@@ -23,8 +25,4 @@ COPY . ./
 # switch on systemd init system in container
 ENV INITSYSTEM on
 
-# Enable I2C
-CMD ["modprobe","i2c-dev"]
-
-# main.py will run when container starts up on the device
-CMD ["python","-u","src/main.py"]
+CMD ["./start.sh"]
