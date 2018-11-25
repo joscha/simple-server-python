@@ -1,7 +1,7 @@
 # base-image for python on any machine using a template variable,
 # see more about dockerfile templates here:http://docs.resin.io/pages/deployment/docker-templates
-FROM resin/%%RESIN_MACHINE_NAME%%-python:3
-#FROM resin/raspberry-pi-python:3
+#FROM resin/%%RESIN_MACHINE_NAME%%-python:3
+FROM resin/raspberry-pi-python:3
 
 # Install prereqs
 RUN apt-get update && apt-get install -yq \
@@ -25,4 +25,4 @@ COPY . ./
 # switch on systemd init system in container
 ENV INITSYSTEM on
 
-CMD ["sudo", "./start.sh"]
+CMD [ "./start.sh"]

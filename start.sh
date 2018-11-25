@@ -9,4 +9,4 @@ modprobe i2c-dev
 
 # sudo python -u src/main.py
 
-sudo python -u lcd_i2c.py
+python -u lcd_i2c.py
