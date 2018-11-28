@@ -1,18 +1,17 @@
 # base-image for python on any machine using a template variable,
 # see more about dockerfile templates here:http://docs.resin.io/pages/deployment/docker-templates
-#FROM resin/%%RESIN_MACHINE_NAME%%-python:3
-FROM resin/raspberry-pi-python:3
+FROM resin/%%RESIN_MACHINE_NAME%%-python:3
+#FROM resin/raspberry-pi-python:3
+
+# RUN pip install --upgrade pip
 
 # Install prereqs
 RUN apt-get update && apt-get install -yq \
     i2c-tools && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# RUN pip install --upgrade pip
-
 # Set our working directory
 WORKDIR /usr/src/app
-
 # Copy requirements.txt first for better cache on later pushes
 COPY ./requirements.txt /requirements.txt
 
@@ -25,4 +24,4 @@ COPY . ./
 # switch on systemd init system in container
 ENV INITSYSTEM on
 
-CMD [ "./start.sh"]
+CMD ["./start.sh"]

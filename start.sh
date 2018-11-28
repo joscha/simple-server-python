@@ -7,6 +7,6 @@ modprobe i2c-dev
 
 # sudo i2cdetect -y 1
 
-# sudo python -u src/main.py
+python -u src/main.py
 
-python -u lcd_i2c.py
+#python -u lcd_i2c.py
