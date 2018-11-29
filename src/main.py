@@ -3,6 +3,7 @@ import solaredge
 import os
 import time
 import requests
+import sys
 
 
 if __name__ == '__main__':
@@ -132,7 +133,6 @@ if __name__ == '__main__':
             lcd.write_string(f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ")
             lcd.crlf()
             lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
-            time.sleep(30)
         except requests.exceptions.HTTPError:
             lcd.clear()
             lcd.write_string('HTTP error')
@@ -142,5 +142,6 @@ if __name__ == '__main__':
             lcd.clear()
             lcd.write_string(err)
             raise
+        time.sleep(30)
 
     lcd.close()
