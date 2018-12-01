@@ -134,6 +134,7 @@ if __name__ == '__main__':
             lcd.crlf()
             lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
         except requests.exceptions.HTTPError:
+            print("HTTP error")
             lcd.clear()
             lcd.write_string('HTTP error')
         except:
@@ -144,5 +145,7 @@ if __name__ == '__main__':
             raise
         # The solaredge API only allows 300 calls per day
         # so we need to throttle the updates...
-        time.sleep(round(24*60/300*60))
+        time_to_sleep = round(24*60/300*60)
+        print(f"Sleeping for {time_to_sleep} seconds...")
+        time.sleep(time_to_sleep)
     lcd.close()
