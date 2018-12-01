@@ -142,6 +142,7 @@ if __name__ == '__main__':
             lcd.clear()
             lcd.write_string(err)
             raise
-        time.sleep(30)
-
+        # The solaredge API only allows 300 calls per day
+        # so we need to throttle the updates...
+        time.sleep(round(24*60/300*60))
     lcd.close()
