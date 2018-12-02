@@ -87,9 +87,19 @@ if __name__ == '__main__':
     grid_icon = '\x02'
     loading_icon = '\x04'
 
+    if 'SOLAREDGE_API_KEY' in os.environ:
+        SOLAREDGE_API_KEY = os.environ['SOLAREDGE_API_KEY']
+    else
+        lcd.clear()
+        lcd.write_string('SOLAREDGE_API_KEY missing')
+        sys.exit(1)
 
-    SOLAREDGE_API_KEY = os.environ['SOLAREDGE_API_KEY']
-    SOLAREDGE_SITE_ID = os.environ['SOLAREDGE_SITE_ID']
+    if 'SOLAREDGE_SITE_ID' in os.environ:
+        SOLAREDGE_SITE_ID = os.environ['SOLAREDGE_SITE_ID']
+    else
+        lcd.clear()
+        lcd.write_string('SOLAREDGE_SITE_ID missing')
+        sys.exit(1)
 
     s = solaredge.Solaredge(SOLAREDGE_API_KEY)
 
