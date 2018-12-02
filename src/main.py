@@ -89,14 +89,14 @@ if __name__ == '__main__':
 
     if 'SOLAREDGE_API_KEY' in os.environ:
         SOLAREDGE_API_KEY = os.environ['SOLAREDGE_API_KEY']
-    else
+    else:
         lcd.clear()
         lcd.write_string('SOLAREDGE_API_KEY missing')
         sys.exit(1)
 
     if 'SOLAREDGE_SITE_ID' in os.environ:
         SOLAREDGE_SITE_ID = os.environ['SOLAREDGE_SITE_ID']
-    else
+    else:
         lcd.clear()
         lcd.write_string('SOLAREDGE_SITE_ID missing')
         sys.exit(1)
