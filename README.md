@@ -1,4 +1,4 @@
-## A Simple Server with Python Flask
+## Display SolarEdge data on LCD via RPi
 
 This is a simple skeleton Flask server project that works on any of the devices supported by [balena][balena-link].
 
