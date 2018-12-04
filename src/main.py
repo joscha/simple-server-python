@@ -119,7 +119,7 @@ if __name__ == '__main__':
         lcd.write_string('LATITUDE missing')
         sys.exit(1)
 
-    sun = Sun(LATITUDE, LONGITUDE)
+    sun = Sun(float(LATITUDE), float(LONGITUDE))
 
     lcd.clear()
     while True:
