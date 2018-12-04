@@ -13,7 +13,7 @@ if __name__ == '__main__':
               cols=16, rows=2, dotsize=8,
               charmap='A02',
               auto_linebreaks=False,
-              backlight_enabled=True)
+              backlight_enabled=False)
     lcd.clear()
     lcd.write_string('...initializing')
 
