@@ -1,5 +1,5 @@
 RPLCD==1.2.0
 solaredge==0.0.2
 smbus2==0.2.1
-python-dateutil==2.7.5
+dateutil==2.7.5
 git+https://github.com/palto42/suntime.git@pip-install#egg=suntime
