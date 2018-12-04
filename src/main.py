@@ -4,7 +4,7 @@ import os
 import time
 import requests
 import sys
-import datetime
+from datetime import datetime
 from suntime import Sun
 
 
