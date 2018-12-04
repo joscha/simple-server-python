@@ -4,6 +4,8 @@ import os
 import time
 import requests
 import sys
+import datetime
+from suntime import Sun
 
 
 if __name__ == '__main__':
@@ -103,9 +105,30 @@ if __name__ == '__main__':
 
     s = solaredge.Solaredge(SOLAREDGE_API_KEY)
 
+    if 'LONGITUDE' in os.environ:
+        LONGITUDE = os.environ['LONGITUDE']
+    else:
+        lcd.clear()
+        lcd.write_string('LONGITUDE missing')
+        sys.exit(1)
+
+    if 'LATITUDE' in os.environ:
+        LATITUDE = os.environ['LATITUDE']
+    else:
+        lcd.clear()
+        lcd.write_string('LATITUDE missing')
+        sys.exit(1)
+
+    sun = Sun(LATITUDE, LONGITUDE)
+
     lcd.clear()
     while True:
         try:
+            utc_now = datetime.utcnow()
+            today_sr = sun.get_sunrise_time()
+            today_ss = sun.get_sunset_time()
+
+            lcd.backlight_enabled = utc_now < today_sr or utc_now > today_ss
             lcd.home()
             lcd.write_string(loading_icon)
             print('loading data')
