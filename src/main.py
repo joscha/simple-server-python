@@ -18,6 +18,7 @@ if __name__ == '__main__':
     lcd.clear()
     lcd.write_string('...initializing')
 
+    # characters via https://omerk.github.io/lcdchargen/
     bitmap_house = (
         0b00100,
         0b01110,
@@ -106,6 +107,7 @@ if __name__ == '__main__':
 
     s = solaredge.Solaredge(SOLAREDGE_API_KEY)
 
+    # coordinates via https://www.latlong.net/
     if 'LONGITUDE' in os.environ:
         LONGITUDE = os.environ['LONGITUDE']
     else:
