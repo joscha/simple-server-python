@@ -6,7 +6,7 @@ FROM resin/%%RESIN_MACHINE_NAME%%-python:3
 
 # Install prereqs
 RUN apt-get update && apt-get install -yq \
-    python3-dateutil && \
+    python3-dateutil \
     i2c-tools && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
