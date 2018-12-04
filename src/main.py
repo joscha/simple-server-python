@@ -43,9 +43,7 @@ if __name__ == '__main__':
     )
     lcd.create_char(1, bitmap_solar_panels)
 
-
-
-    bitmap_grid = (
+    bitmap_power_pole = (
         0b00100,
         0b01110,
         0b00100,
@@ -55,7 +53,18 @@ if __name__ == '__main__':
         0b00100,
         0b00000
     )
-    lcd.create_char(2, bitmap_grid)
+
+    bitmap_outlet = (
+        0b00000,
+        0b01110,
+        0b10001,
+        0b11011,
+        0b10001,
+        0b01110,
+        0b00000,
+        0b00000
+    )
+    lcd.create_char(2, bitmap_outlet)
 
     # This *should* be \x7F but it seems as if the LED I am using
     # doesn't know this...
