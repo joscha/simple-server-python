@@ -53,7 +53,17 @@ if __name__ == '__main__':
         0b00100,
         0b00000
     )
-    lcd.create_char(2, bitmap_power_pole)
+    bitmap_power_plug = (
+        0b01010,
+        0b01010,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b01110,
+        0b00100,
+        0b00000
+    )
+    lcd.create_char(2, bitmap_power_plug)
 
     # This *should* be \x7F but it seems as if the LED I am using
     # doesn't know this...
