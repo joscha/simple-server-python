@@ -6,6 +6,7 @@ import requests
 import sys
 from datetime import datetime
 from suntime import Sun
+from dateutil.tz import tzutc
 
 
 if __name__ == '__main__':
@@ -124,7 +125,7 @@ if __name__ == '__main__':
     lcd.clear()
     while True:
         try:
-            utc_now = datetime.utcnow()
+            utc_now = datetime.now(tzutc())
             today_sr = sun.get_sunrise_time()
             today_ss = sun.get_sunset_time()
 
@@ -174,7 +175,7 @@ if __name__ == '__main__':
             err = sys.exc_info()[0]
             print("Unexpected error:", err)
             lcd.clear()
-            lcd.write_string(err)
+            lcd.write_string(str(err))
             raise
         # The solaredge API only allows 300 calls per day
         # so we need to throttle the updates...
