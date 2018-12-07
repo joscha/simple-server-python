@@ -140,6 +140,7 @@ if __name__ == '__main__':
             today_ss = sun.get_sunset_time()
 
             lcd.backlight_enabled = utc_now < today_sr or utc_now > today_ss
+            print(f"Backlight is enabled: {lcd.backlight_enabled}")
             lcd.home()
             lcd.write_string(loading_icon)
             print('loading data')
