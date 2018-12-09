@@ -6,7 +6,7 @@ import requests
 import sys
 from datetime import datetime
 from suntime import Sun
-from dateutil.tz import tzutc
+from dateutil.tz import tzlocal
 
 
 if __name__ == '__main__':
@@ -135,11 +135,11 @@ if __name__ == '__main__':
     lcd.clear()
     while True:
         try:
-            utc_now = datetime.now(tzutc())
-            today_sr = sun.get_sunrise_time()
-            today_ss = sun.get_sunset_time()
-
-            lcd.backlight_enabled = utc_now < today_sr or utc_now > today_ss
+            now = datetime.now(tzlocal())
+            # We get the day before today and then its sunrise, which is the sunrise leading up to now
+            today_sr = s.get_local_sunrise_time(datetime.datetime.today() - datetime.timedelta(1))
+            today_ss = sun.get_local_sunset_time(datetime.datetime.today())
+            lcd.backlight_enabled = now < today_sr or now > today_ss
             print(f"Backlight is enabled: {lcd.backlight_enabled}")
             lcd.home()
             lcd.write_string(loading_icon)
