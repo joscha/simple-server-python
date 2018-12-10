@@ -14,7 +14,7 @@ if __name__ == '__main__':
               cols=16, rows=2, dotsize=8,
               charmap='A02',
               auto_linebreaks=False,
-              backlight_enabled=False)
+              backlight_enabled=True)
     lcd.clear()
     lcd.write_string('...initializing')
 
@@ -115,32 +115,39 @@ if __name__ == '__main__':
 
     s = solaredge.Solaredge(SOLAREDGE_API_KEY)
 
-    # coordinates via https://www.latlong.net/
-    if 'LONGITUDE' in os.environ:
-        LONGITUDE = os.environ['LONGITUDE']
-    else:
-        lcd.clear()
-        lcd.write_string('LONGITUDE missing')
-        sys.exit(1)
+    backlight_mode = 'always' # default
+    sun = None
+    if 'BACKLIGHT_MODE' in os.environ:
+        backlight_mode = os.environ['BACKLIGHT_MODE']
 
-    if 'LATITUDE' in os.environ:
-        LATITUDE = os.environ['LATITUDE']
-    else:
-        lcd.clear()
-        lcd.write_string('LATITUDE missing')
-        sys.exit(1)
+        if backlight_mode == 'night':
+            # coordinates via https://www.latlong.net/
+            if 'LONGITUDE' in os.environ:
+                LONGITUDE = os.environ['LONGITUDE']
+            else:
+                lcd.clear()
+                lcd.write_string('LONGITUDE missing')
+                sys.exit(1)
 
-    sun = Sun(float(LATITUDE), float(LONGITUDE))
+            if 'LATITUDE' in os.environ:
+                LATITUDE = os.environ['LATITUDE']
+            else:
+                lcd.clear()
+                lcd.write_string('LATITUDE missing')
+                sys.exit(1)
+            sun = Sun(float(LATITUDE), float(LONGITUDE))
 
     lcd.clear()
     while True:
         try:
-            now = datetime.now(tzlocal())
-            # We get the day before today and then its sunrise, which is the sunrise leading up to now
-            today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
-            today_ss = sun.get_local_sunset_time(datetime.today())
-            lcd.backlight_enabled = now < today_sr or now > today_ss
-            print(f"Backlight is enabled: {lcd.backlight_enabled}")
+            if backlight_mode == 'night':
+                now = datetime.now(tzlocal())
+                # We get the day before today and then its sunrise, which is the sunrise leading up to now
+                today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
+                today_ss = sun.get_local_sunset_time(datetime.today())
+                lcd.backlight_enabled = now < today_sr or now > today_ss
+                print(f"Backlight is enabled: {lcd.backlight_enabled}")
+
             lcd.home()
             lcd.write_string(loading_icon)
             print('loading data')
