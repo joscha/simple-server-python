@@ -230,8 +230,8 @@ if __name__ == '__main__':
             lcd.home()
             for line in lines:
                 line = line[:cols]
-                print('-' * cols)
-                print(line)
+                print('|' + '-' * cols + '|')
+                print('|' + line.replace(' ', '_') + '|')
                 lcd.write_string(line)
                 lcd.crlf()
         except requests.exceptions.HTTPError:
