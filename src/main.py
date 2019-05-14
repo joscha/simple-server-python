@@ -10,7 +10,7 @@ from dateutil.tz import tzlocal
 
 
 if __name__ == '__main__':
-    lcd = CharLCD(i2c_expander='PCF8574', address=0x3f, port=1,
+    lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1,
               cols=20, rows=4, dotsize=8,
               charmap='A02',
               auto_linebreaks=False,
