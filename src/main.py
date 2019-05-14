@@ -7,6 +7,7 @@ import sys
 from datetime import datetime, timedelta
 from suntime import Sun
 from dateutil.tz import tzlocal
+import re
 
 
 if __name__ == '__main__':
@@ -231,9 +232,9 @@ if __name__ == '__main__':
             for line in lines:
                 line = line[:cols]
                 print('|' + '-' * cols + '|')
-                print('|' + line.replace(' ', '_') + '|')
-                lcd.write_string(line)
-                lcd.crlf()
+                print('|' + re.sub(r'[^\x00-\x7F]+', '#', line).replace(' ', '_') + '|')
+                #lcd.write_string(line)
+                #lcd.crlf()
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
