@@ -240,10 +240,6 @@ if __name__ == '__main__':
                 line = line[:cols]
                 lcd.write_string(line)
 
-        except requests.exceptions.HTTPError:
-            print("HTTP error")
-            lcd.clear()
-            lcd.write_string('HTTP error')
         except Exception as e:
             print("Unexpected error:", e)
             lcd.clear()
