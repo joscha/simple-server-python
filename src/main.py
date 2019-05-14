@@ -183,8 +183,11 @@ if __name__ == '__main__':
                 overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
                 print(overview)
                 day_kWh = overview["lastDayData"]["energy"] / 1000
+                print(f'day kWh: {day_kWh}')
                 month_kWh = overview["lastMonthData"]["energy"] / 1000
+                print(f'month kWh: {month_kWh}')
                 year_kWh = overview["lastYearData"]["energy"] / 1000
+                print(f'year kWh: {year_kWh}')
                 last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
             lcd.clear()
