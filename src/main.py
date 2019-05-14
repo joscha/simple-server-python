@@ -206,28 +206,32 @@ if __name__ == '__main__':
                 elif source == 'load' and target == 'grid':
                     house_to_grid = arrow_right_icon
             # LCD setup:
-
+            lines = None
             if DIMENSIONS == '16x2':
                 #0123456789123456
                 #L_P_→__H__←__G__
                 #0.00__0.00__0.00
-                lcd.write_string(f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ")
-                lcd.crlf()
-                lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
+                lines = [
+                    f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ",
+                    f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}'
+                ]
             else:
                 #01234567890123456789
                 #L__P__→___H___←__G__
                 #0.000__0.000___0.000
                 #Day___|Month_|Year__
                 #000.00|_000.0|0000.0
+                lines = [
+                    f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ",
+                    f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}',
+                    'Day   |Month |Year  ',
+                    f'{day_kWh:<3.2g}|{month_kWh:^3.1g}|{year_kWh:>4.1g}'
+                ]
 
-                lcd.write_string(f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ")
+            for line in lines:
+                line = line[:cols]
+                lcd.write_string(line)
                 lcd.crlf()
-                lcd.write_string(f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}')
-                lcd.crlf()
-                lcd.write_string('Day   |Month |Year  ')
-                lcd.crlf()
-                lcd.write_string(f'{day_kWh:<3.2g}|{month_kWh:^3.1g}|{year_kWh:>4.1g}')
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
