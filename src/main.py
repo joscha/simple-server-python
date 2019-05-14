@@ -227,16 +227,16 @@ if __name__ == '__main__':
                     f'{day_kWh:<3g}|{month_kWh:^3g}|{year_kWh:>4g}'
                 ]
 
-            #lcd.clear()
-            lcd.home()
             for line in lines:
                 line = line[:cols]
                 print('|' + '-' * cols + '|')
-                print('|' + re.sub(r'[\x00-\x09]+', '#', line).replace(' ', '_') + '|')
-            for line in lines:
+                print('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
+            lcd.clear()
+            lcd.home()
+            for num, line in enumerate(lines, start=0):
+                lcd.cursor_pos = (num,0)
                 line = line[:cols]
                 lcd.write_string(line)
-                lcd.crlf()
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
