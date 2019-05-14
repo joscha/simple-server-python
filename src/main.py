@@ -224,18 +224,18 @@ if __name__ == '__main__':
                     f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ",
                     f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}',
                     'Day   |Month |Year  ',
-                    f'{day_kWh:<3g}|{month_kWh:^3g}|{year_kWh:>4g}'
+                    f'{day_kWh:<6g}| {month_kWh:^6g}|{year_kWh:>6g}'
                 ]
 
             for line in lines:
-                line = line[:cols]
+                line = line[:cols-1]
                 print('|' + '-' * cols + '|')
                 print('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
             lcd.clear()
             lcd.home()
             for num, line in enumerate(lines, start=0):
                 lcd.cursor_pos = (num,0)
-                line = line[:cols]
+                line = line[:cols-1]
                 lcd.write_string(line)
         except requests.exceptions.HTTPError:
             print("HTTP error")
