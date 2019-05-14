@@ -180,7 +180,7 @@ if __name__ == '__main__':
             last_update = None
             if DIMENSIONS == '20x4' and (last_update is None or (datetime.now(tzlocal()) - last_update).seconds > 15*60):
                 print('overview')
-                overview = s.get_overview(SOLAREDGE_SITE_ID)
+                overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
                 print(overview)
                 day_kWh = overview["lastDayData"]["energy"] / 1000
                 month_kWh = overview["lastMonthData"]["energy"] / 1000
