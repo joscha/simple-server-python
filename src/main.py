@@ -215,15 +215,15 @@ if __name__ == '__main__':
                 #01234567890123456789
                 #L__P__→___H___←__G__
                 #0.000__0.000___0.000
-                #_Day__|_Month_|_Year
-                #000.00|_000.00|0000.0
+                #Day___|Month_|Year__
+                #000.00|_000.0|0000.0
 
                 lcd.write_string(f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ")
                 lcd.crlf()
                 lcd.write_string(f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}')
                 lcd.crlf()
-                lcd.write_string(' Day | Month | Year ')
-                lcd.write_string(f'{day_kWh:<5.2g}| {month_kWh:^5.2g}|{year_kWh:>5.1g}')
+                lcd.write_string('Day   |Month |Year  ')
+                lcd.write_string(f'{day_kWh:<5.2g}|{month_kWh:^5.2g}|{year_kWh:>5.1g}')
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
