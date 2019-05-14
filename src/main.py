@@ -223,8 +223,8 @@ if __name__ == '__main__':
                 lines = [
                     f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ",
                     f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}',
-                    'Day   Month   Year',
-                    f'{day_kWh:<4g} {month_kWh:<5g}   {year_kWh:<6g}'
+                    'Day    Month    Year',
+                    f'{day_kWh:<4.3g} {month_kWh:<5.4g} {year_kWh:>6g}'
                 ]
 
             for line in lines:
