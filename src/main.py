@@ -224,7 +224,7 @@ if __name__ == '__main__':
                     f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ",
                     f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}',
                     'Day   |Month |Year  ',
-                    f'{day_kWh:<3.2g}|{month_kWh:^3.1g}|{year_kWh:>4.1g}'
+                    f'{day_kWh:<3g}|{month_kWh:^3g}|{year_kWh:>4g}'
                 ]
 
             #lcd.clear()
@@ -232,7 +232,7 @@ if __name__ == '__main__':
             for line in lines:
                 line = line[:cols]
                 print('|' + '-' * cols + '|')
-                print('|' + re.sub(r'[^\x00-\x7F]+', '#', line).replace(' ', '_') + '|')
+                print('|' + re.sub(r'[\x00-\x7F]+', '#', line).replace(' ', '_') + '|')
                 #lcd.write_string(line)
                 #lcd.crlf()
         except requests.exceptions.HTTPError:
