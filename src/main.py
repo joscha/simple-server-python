@@ -163,9 +163,9 @@ if __name__ == '__main__':
 
             lcd.home()
             lcd.write_string(loading_icon)
-            print('loading data')
-            print('current power flow')
+            print('loading data...')
             currentPowerFlow = s.get_current_power_flow(SOLAREDGE_SITE_ID)["siteCurrentPowerFlow"]
+            print('current power flow:')
             print(currentPowerFlow)
             grid_active = currentPowerFlow["GRID"]["status"].lower() == 'active'
             grid_kW = currentPowerFlow["GRID"]["currentPower"]
@@ -180,8 +180,8 @@ if __name__ == '__main__':
             year_kWh = None
             last_update = None
             if DIMENSIONS == '20x4' and (last_update is None or (datetime.now(tzlocal()) - last_update).seconds > 15*60):
-                print('overview')
                 overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
+                print('overview:')
                 print(overview)
                 day_kWh = overview["lastDayData"]["energy"] / 1000
                 print(f'day kWh: {day_kWh}')
@@ -232,7 +232,9 @@ if __name__ == '__main__':
                 print('|' + '-' * cols + '|')
                 print('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
 
+            lcd.clear()
             lcd.home()
+            lcd.auto_linebreaks = True
             for num, line in enumerate(lines, start=0):
                 lcd.cursor_pos = (num,0)
                 line = line[:cols]
