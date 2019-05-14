@@ -190,8 +190,6 @@ if __name__ == '__main__':
                 print(f'year kWh: {year_kWh}')
                 last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
-            lcd.clear()
-
             pv_to_house = ' '
             house_to_grid = ' '
 
@@ -228,8 +226,12 @@ if __name__ == '__main__':
                     f'{day_kWh:<3.2g}|{month_kWh:^3.1g}|{year_kWh:>4.1g}'
                 ]
 
+            #lcd.clear()
+            lcd.home()
             for line in lines:
                 line = line[:cols]
+                print('-' * cols)
+                print(line)
                 lcd.write_string(line)
                 lcd.crlf()
         except requests.exceptions.HTTPError:
