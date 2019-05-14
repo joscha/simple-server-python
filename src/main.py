@@ -163,6 +163,7 @@ if __name__ == '__main__':
             lcd.home()
             lcd.write_string(loading_icon)
             print('loading data')
+            print('current power flow')
             currentPowerFlow = s.get_current_power_flow(SOLAREDGE_SITE_ID)["siteCurrentPowerFlow"]
             print(currentPowerFlow)
             grid_active = currentPowerFlow["GRID"]["status"].lower() == 'active'
@@ -173,6 +174,18 @@ if __name__ == '__main__':
 
             pv_active = currentPowerFlow["PV"]["status"].lower() == 'active'
             pv_kW = currentPowerFlow["PV"]["currentPower"]
+            day_kWh = None
+            month_kWh = None
+            year_kWh = None
+            last_update = None
+            if DIMENSIONS == '20x4' and (last_update is None or (datetime.now(tzlocal()) - last_update).seconds > 15*60):
+                print('overview')
+                overview = s.get_overview(SOLAREDGE_SITE_ID)
+                print(overview)
+                day_kWh = overview["lastDayData"]["energy"] / 1000
+                month_kWh = overview["lastMonthData"]["energy"] / 1000
+                year_kWh = overview["lastYearData"]["energy"] / 1000
+                last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
             lcd.clear()
 
@@ -194,17 +207,23 @@ if __name__ == '__main__':
             if DIMENSIONS == '16x2':
                 #0123456789123456
                 #L_P_→__H__←__G__
-                #0.00  0.00  0.00
+                #0.00__0.00__0.00
                 lcd.write_string(f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ")
                 lcd.crlf()
                 lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
             else:
                 #01234567890123456789
                 #L__P__→___H___←__G__
-                #0.000  0.000   0.000
+                #0.000__0.000___0.000
+                #_Day__|_Month_|_Year
+                #000.00|_000.00|0000.0
+
                 lcd.write_string(f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ")
                 lcd.crlf()
                 lcd.write_string(f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}')
+                lcd.crlf()
+                lcd.write_string(' Day | Month | Year ')
+                lcd.write_string(f'{day_kWh:<5.2g}| {month_kWh:^5.2g}|{year_kWh:>5.1g}')
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
@@ -215,9 +234,15 @@ if __name__ == '__main__':
             lcd.clear()
             lcd.write_string(str(err))
             raise
+
+        extra_calls_per_day=0
+        if DIMENSIONS == '20x4':
+            # there is one extra request every 15 minutes for the overview data
+            extra_calls_per_day=24*60/15
+
         # The solaredge API only allows 300 calls per day
         # so we need to throttle the updates...
-        time_to_sleep = round(24*60/300*60)
-        print(f"Sleeping for {time_to_sleep} seconds...")
-        time.sleep(time_to_sleep)
+        secs_to_sleep = round(24*60*60/(300-extra_calls_per_day))
+        print(f"Sleeping for {secs_to_sleep} seconds...")
+        time.sleep(secs_to_sleep)
     lcd.close()
