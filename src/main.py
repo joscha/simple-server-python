@@ -223,6 +223,7 @@ if __name__ == '__main__':
                 lcd.write_string(f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}')
                 lcd.crlf()
                 lcd.write_string('Day   |Month |Year  ')
+                lcd.crlf()
                 lcd.write_string(f'{day_kWh:<3.2g}|{month_kWh:^3.1g}|{year_kWh:>4.1g}')
         except requests.exceptions.HTTPError:
             print("HTTP error")
