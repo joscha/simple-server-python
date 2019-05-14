@@ -10,8 +10,20 @@ from dateutil.tz import tzlocal
 
 
 if __name__ == '__main__':
+    if 'DIMENSIONS' in os.environ:
+        DIMENSIONS = os.environ['DIMENSIONS']
+        if DIMENSIONS != '16x2' and DIMENSIONS != '20x4':
+            print(f"Unknown dimensions {DIMENSIONS}")
+            sys.exit(1)
+        print(f"Dimensions set to {DIMENSIONS}")
+    else:
+        print("Dimension defaulted to 16x2")
+        DIMENSIONS = '16x2'
+
+    cols, rows = [int(n) for n in DIMENSIONS.split('x')]
+
     lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1,
-              cols=20, rows=4, dotsize=8,
+              cols=cols, rows=rows, dotsize=8,
               charmap='A02',
               auto_linebreaks=False,
               backlight_enabled=True)
@@ -177,14 +189,22 @@ if __name__ == '__main__':
                     house_to_grid = arrow_left_icon
                 elif source == 'load' and target == 'grid':
                     house_to_grid = arrow_right_icon
-
             # LCD setup:
-            #0123456789123456
-            #L_P_→__H__←__G__
-            #0.00  0.00  0.00
-            lcd.write_string(f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ")
-            lcd.crlf()
-            lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
+
+            if DIMENSIONS == '16x2':
+                #0123456789123456
+                #L_P_→__H__←__G__
+                #0.00  0.00  0.00
+                lcd.write_string(f"  {pv_icon} {pv_to_house}  {house_icon}  {house_to_grid}  {grid_icon} ")
+                lcd.crlf()
+                lcd.write_string(f'{pv_kW:<4.3g} {load_kW:^5.4g} {grid_kW:>5.4g}')
+            else:
+                #01234567890123456789
+                #L__P__→___H___←__G__
+                #0.000  0.000   0.000
+                lcd.write_string(f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon} ")
+                lcd.crlf()
+                lcd.write_string(f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}')
         except requests.exceptions.HTTPError:
             print("HTTP error")
             lcd.clear()
