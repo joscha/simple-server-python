@@ -151,6 +151,7 @@ if __name__ == '__main__':
             sun = Sun(float(LATITUDE), float(LONGITUDE))
 
     lcd.clear()
+    error = None
     while True:
         try:
             if backlight_mode == 'night':
@@ -162,6 +163,9 @@ if __name__ == '__main__':
                 print(f"Backlight is enabled: {lcd.backlight_enabled}")
 
             lcd.home()
+            if error != None:
+                lcd.clear()
+                error = None
             lcd.write_string(loading_icon)
             print('loading data...')
             currentPowerFlow = s.get_current_power_flow(SOLAREDGE_SITE_ID)["siteCurrentPowerFlow"]
@@ -243,13 +247,13 @@ if __name__ == '__main__':
             lcd.clear()
             lcd.auto_linebreaks = True
             lcd.write_string(f'HTTP error: {status_code}')
-            continue
+            error = e
         except Exception as e:
             print("Unexpected error:", e)
             lcd.clear()
             lcd.auto_linebreaks = True
             lcd.write_string(str(e))
-            raise
+            error = e
 
         extra_calls_per_day=0
         if DIMENSIONS == '20x4':
