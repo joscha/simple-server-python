@@ -255,7 +255,7 @@ if __name__ == '__main__':
             lcd.auto_linebreaks = True
             lcd.write_string(f'HTTP error: {status_code}')
             error = e
-            exponential_backoff *= 2
+            exponential_backoff = min(exponential_backoff*2,16)
             logger.info(f'Increased exponential backoff: {exponential_backoff}')
         except Exception as e:
             logger.error("Unexpected error: %s", str(e))
