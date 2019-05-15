@@ -247,7 +247,7 @@ if __name__ == '__main__':
                 line = line[:cols]
                 lcd.write_string(line)
         except requests.exceptions.HTTPError as e:
-            logger.error("Unexpected HTTP error:", e)
+            logger.error("Unexpected HTTP error: %s", str(e))
             status_code = e.response.status_code
             lcd.clear()
             lcd.auto_linebreaks = True
@@ -256,7 +256,7 @@ if __name__ == '__main__':
             exponential_backoff *= 2
             logger.info(f'Increased exponential backoff: {exponential_backoff}')
         except Exception as e:
-            logger.error("Unexpected error:", e)
+            logger.error("Unexpected error: %s", str(e))
             lcd.clear()
             lcd.auto_linebreaks = True
             lcd.write_string(str(e))
