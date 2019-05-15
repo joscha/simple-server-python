@@ -198,11 +198,11 @@ if __name__ == '__main__':
                 logger.debug('overview:')
                 logger.debug(overview)
                 day_kWh = overview["lastDayData"]["energy"] / 1000
-                logger.debug(f'day kWh: {day_kWh}')
+                logger.debug(f'  day kWh: {day_kWh}')
                 month_kWh = overview["lastMonthData"]["energy"] / 1000
                 logger.debug(f'month kWh: {month_kWh}')
                 year_kWh = overview["lastYearData"]["energy"] / 1000
-                logger.debug(f'year kWh: {year_kWh}')
+                logger.debug(f' year kWh: {year_kWh}')
                 last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
             pv_to_house = ' '
@@ -238,7 +238,7 @@ if __name__ == '__main__':
                     f"   {pv_icon}  {pv_to_house}   {house_icon}   {house_to_grid}  {grid_icon}  ",
                     f'{pv_kW:<5.4g} {load_kW:^6.5g}  {grid_kW:>6.5g}',
                     'Day   Month   Year  ',
-                    f'{day_kWh:<4.3g}  {month_kWh:<5.4g}  {year_kWh:<6.4g}'
+                    f'{day_kWh:<5.3g} {month_kWh:<6.4g}  {year_kWh:<6.4g}'
                 ]
             if logger.level == logging.DEBUG:
                 for line in lines:
