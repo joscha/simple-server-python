@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     if 'LOG_LEVEL' in os.environ:
-        logger.setLevel(os.environ['LOG_LEVEL'])
+        log_level = os.environ['LOG_LEVEL']
+        logger.info(f'Setting log level to {log_level}')
+        logger.setLevel(log_level)
 
     if 'DIMENSIONS' in os.environ:
         DIMENSIONS = os.environ['DIMENSIONS']
