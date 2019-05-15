@@ -1,4 +1,4 @@
-RPLCD==1.2.0
+RPLCD==1.2.2
 solaredge==0.0.2
-smbus2==0.2.1
-git+https://github.com/satagro/suntime.git@v1.2#egg=suntime
+smbus2==0.2.3
+suntime==1.2.4
