@@ -8,17 +8,23 @@ from datetime import datetime, timedelta
 from suntime import Sun
 from dateutil.tz import tzlocal
 import re
+import logging
 
+MAX_SERVICE_CALLS_PER_DAY=300
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    if 'LOG_LEVEL' in os.environ:
+        logger.setLevel(os.environ['LOG_LEVEL'])
+
     if 'DIMENSIONS' in os.environ:
         DIMENSIONS = os.environ['DIMENSIONS']
         if DIMENSIONS != '16x2' and DIMENSIONS != '20x4':
-            print(f"Unknown dimensions {DIMENSIONS}")
+            logger.error(f"Unknown dimensions {DIMENSIONS}")
             sys.exit(1)
-        print(f"Dimensions set to {DIMENSIONS}")
+        logger.debug(f"Dimensions set to {DIMENSIONS}")
     else:
-        print("Dimension defaulted to 16x2")
+        logger.debug("Dimension defaulted to 16x2")
         DIMENSIONS = '16x2'
 
     cols, rows = [int(n) for n in DIMENSIONS.split('x')]
@@ -138,15 +144,13 @@ if __name__ == '__main__':
             if 'LONGITUDE' in os.environ:
                 LONGITUDE = os.environ['LONGITUDE']
             else:
-                lcd.clear()
-                lcd.write_string('LONGITUDE missing')
+                logger.error('LONGITUDE missing')
                 sys.exit(1)
 
             if 'LATITUDE' in os.environ:
                 LATITUDE = os.environ['LATITUDE']
             else:
-                lcd.clear()
-                lcd.write_string('LATITUDE missing')
+                logger.error('LATITUDE missing')
                 sys.exit(1)
             sun = Sun(float(LATITUDE), float(LONGITUDE))
 
@@ -161,17 +165,17 @@ if __name__ == '__main__':
                 today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
                 today_ss = sun.get_local_sunset_time(datetime.today())
                 lcd.backlight_enabled = now < today_sr or now > today_ss
-                print(f"Backlight is enabled: {lcd.backlight_enabled}")
+                logger.debug(f"Backlight is enabled: {lcd.backlight_enabled}")
 
             lcd.home()
             if error != None:
                 lcd.clear()
                 error = None
             lcd.write_string(loading_icon)
-            print('loading data...')
+            logger.debug('loading data...')
             currentPowerFlow = s.get_current_power_flow(SOLAREDGE_SITE_ID)["siteCurrentPowerFlow"]
-            print('current power flow:')
-            print(currentPowerFlow)
+            logger.debug('current power flow:')
+            logger.debug(currentPowerFlow)
             grid_active = currentPowerFlow["GRID"]["status"].lower() == 'active'
             grid_kW = currentPowerFlow["GRID"]["currentPower"]
 
@@ -186,14 +190,14 @@ if __name__ == '__main__':
             last_update = None
             if DIMENSIONS == '20x4' and (last_update is None or (datetime.now(tzlocal()) - last_update).seconds > 15*60):
                 overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
-                print('overview:')
-                print(overview)
+                logger.debug('overview:')
+                logger.debug(overview)
                 day_kWh = overview["lastDayData"]["energy"] / 1000
-                print(f'day kWh: {day_kWh}')
+                logger.debug(f'day kWh: {day_kWh}')
                 month_kWh = overview["lastMonthData"]["energy"] / 1000
-                print(f'month kWh: {month_kWh}')
+                logger.debug(f'month kWh: {month_kWh}')
                 year_kWh = overview["lastYearData"]["energy"] / 1000
-                print(f'year kWh: {year_kWh}')
+                logger.debug(f'year kWh: {year_kWh}')
                 last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
             pv_to_house = ' '
@@ -231,11 +235,11 @@ if __name__ == '__main__':
                     'Day   Month   Year',
                     f'{day_kWh:<4.3g} {month_kWh:<5.4g} {year_kWh:<5.4g}'
                 ]
-
-            for line in lines:
-                line = line[:cols]
-                print('|' + '-' * cols + '|')
-                print('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
+            if logger.level == logging.DEBUG:
+                for line in lines:
+                    line = line[:cols]
+                    logger.debug('|' + '-' * cols + '|')
+                    logger.debug('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
 
             lcd.clear()
             for num, line in enumerate(lines, start=0):
@@ -243,16 +247,16 @@ if __name__ == '__main__':
                 line = line[:cols]
                 lcd.write_string(line)
         except requests.exceptions.HTTPError as e:
-            print("Unexpected HTTP error:", e)
+            logger.error("Unexpected HTTP error:", e)
             status_code = e.response.status_code
             lcd.clear()
             lcd.auto_linebreaks = True
             lcd.write_string(f'HTTP error: {status_code}')
             error = e
             exponential_backoff *= 2
-            print(f'Increased exponential backoff: {exponential_backoff}')
+            logger.info(f'Increased exponential backoff: {exponential_backoff}')
         except Exception as e:
-            print("Unexpected error:", e)
+            logger.error("Unexpected error:", e)
             lcd.clear()
             lcd.auto_linebreaks = True
             lcd.write_string(str(e))
@@ -263,9 +267,9 @@ if __name__ == '__main__':
             # there is one extra request every 15 minutes for the overview data
             extra_calls_per_day=24*60/15
 
-        # The solaredge API only allows 300 calls per day
+        # The solaredge API only allows MAX_SERVICE_CALLS_PER_DAY calls per day
         # so we need to throttle the updates...
-        secs_to_sleep = round(24*60*60/(300 - extra_calls_per_day) * exponential_backoff)
-        print(f"Sleeping for {secs_to_sleep} seconds...")
+        secs_to_sleep = round(24*60*60/(MAX_SERVICE_CALLS_PER_DAY - extra_calls_per_day) * exponential_backoff)
+        logger.info(f"Sleeping for {secs_to_sleep} seconds...")
         time.sleep(secs_to_sleep)
     lcd.close()
