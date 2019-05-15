@@ -233,13 +233,17 @@ if __name__ == '__main__':
                 print('|' + re.sub(r'[\x00-\x09\x7E]+', '#', line).replace(' ', '_') + '|')
 
             lcd.clear()
-            lcd.home()
-            lcd.auto_linebreaks = True
             for num, line in enumerate(lines, start=0):
                 lcd.cursor_pos = (num,0)
                 line = line[:cols]
                 lcd.write_string(line)
-
+        except requests.exceptions.HTTPError as e:
+            print("Unexpected HTTP error:", e)
+            status_code = e.response.status_code
+            lcd.clear()
+            lcd.auto_linebreaks = True
+            lcd.write_string(f'HTTP error: {status_code}')
+            continue
         except Exception as e:
             print("Unexpected error:", e)
             lcd.clear()
