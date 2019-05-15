@@ -152,6 +152,7 @@ if __name__ == '__main__':
 
     lcd.clear()
     error = None
+    exponential_backoff=1
     while True:
         try:
             if backlight_mode == 'night':
@@ -248,6 +249,8 @@ if __name__ == '__main__':
             lcd.auto_linebreaks = True
             lcd.write_string(f'HTTP error: {status_code}')
             error = e
+            exponential_backoff *= 2
+            print(f'Increased exponential backoff: {exponential_backoff}')
         except Exception as e:
             print("Unexpected error:", e)
             lcd.clear()
@@ -262,7 +265,7 @@ if __name__ == '__main__':
 
         # The solaredge API only allows 300 calls per day
         # so we need to throttle the updates...
-        secs_to_sleep = round(24*60*60/(300-extra_calls_per_day))
+        secs_to_sleep = round(24*60*60/(300 - extra_calls_per_day) * exponential_backoff)
         print(f"Sleeping for {secs_to_sleep} seconds...")
         time.sleep(secs_to_sleep)
     lcd.close()
