@@ -11,7 +11,10 @@ import re
 import logging
 
 MAX_SERVICE_CALLS_PER_DAY=300
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('solarEdgeDisplay')
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
 
 if __name__ == '__main__':
     if 'LOG_LEVEL' in os.environ:
