@@ -11,6 +11,7 @@ import re
 import logging
 
 MAX_SERVICE_CALLS_PER_DAY=300
+OVERVIEW_INTERVAL_MINUTES=15
 logger = logging.getLogger('solarEdgeDisplay')
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -153,36 +154,44 @@ if __name__ == '__main__':
     s = solaredge.Solaredge(SOLAREDGE_API_KEY)
 
     backlight_mode = 'always' # default
-    sun = None
     if 'BACKLIGHT_MODE' in os.environ:
         backlight_mode = os.environ['BACKLIGHT_MODE']
 
-        if backlight_mode == 'night':
-            # coordinates via https://www.latlong.net/
-            if 'LONGITUDE' in os.environ:
-                LONGITUDE = os.environ['LONGITUDE']
-            else:
-                logger.error('LONGITUDE missing')
-                sys.exit(1)
+    # coordinates via https://www.latlong.net/
+    if 'LONGITUDE' in os.environ:
+        LONGITUDE = os.environ['LONGITUDE']
+    else:
+        logger.error('LONGITUDE missing')
+        sys.exit(1)
 
-            if 'LATITUDE' in os.environ:
-                LATITUDE = os.environ['LATITUDE']
-            else:
-                logger.error('LATITUDE missing')
-                sys.exit(1)
-            sun = Sun(float(LATITUDE), float(LONGITUDE))
+    if 'LATITUDE' in os.environ:
+        LATITUDE = os.environ['LATITUDE']
+    else:
+        logger.error('LATITUDE missing')
+        sys.exit(1)
+    sun = Sun(float(LATITUDE), float(LONGITUDE))
 
     lcd.clear()
     error = None
     exponential_backoff=1
+
+    day_kWh = None
+    month_kWh = None
+    year_kWh = None
+    last_update = None
+
     while True:
+        now = datetime.now(tzlocal())
+        # We get the day before today and then its sunrise, which is the sunrise leading up to now
+        today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
+        today_ss = sun.get_local_sunset_time(datetime.today())
+        is_night = now < today_sr or now > today_ss
+        is_day = not is_night
+        day_hours = round((today_ss - today_sr).total_seconds() / 3600)
+
         try:
             if backlight_mode == 'night':
-                now = datetime.now(tzlocal())
-                # We get the day before today and then its sunrise, which is the sunrise leading up to now
-                today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
-                today_ss = sun.get_local_sunset_time(datetime.today())
-                lcd.backlight_enabled = now < today_sr or now > today_ss
+                lcd.backlight_enabled = is_night
                 logger.debug(f"Backlight is enabled: {lcd.backlight_enabled}")
 
             lcd.home()
@@ -202,11 +211,8 @@ if __name__ == '__main__':
 
             pv_active = currentPowerFlow["PV"]["status"].lower() == 'active'
             pv_kW = currentPowerFlow["PV"]["currentPower"]
-            day_kWh = None
-            month_kWh = None
-            year_kWh = None
-            last_update = None
-            if DIMENSIONS == '20x4' and (last_update is None or (datetime.now(tzlocal()) - last_update).seconds > 15*60):
+
+            if DIMENSIONS == '20x4' and (last_update is None or (is_day and (datetime.now(tzlocal()) - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60)):
                 overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
                 logger.debug('overview:')
                 logger.debug(overview)
@@ -276,11 +282,13 @@ if __name__ == '__main__':
             lcd.auto_linebreaks = True
             lcd.write_string(str(e))
             error = e
+            exponential_backoff = min(exponential_backoff*2,16)
+            logger.info(f'Increased exponential backoff: {exponential_backoff}')
 
         extra_calls_per_day=0
         if DIMENSIONS == '20x4':
-            # there is one extra request every 15 minutes for the overview data
-            extra_calls_per_day=24*60/15
+            # there is one extra request every OVERVIEW_INTERVAL_MINUTES minutes during sun hours for the overview data
+            extra_calls_per_day=day_hours*60/OVERVIEW_INTERVAL_MINUTES
 
         # The solaredge API only allows MAX_SERVICE_CALLS_PER_DAY calls per day
         # so we need to throttle the updates...
