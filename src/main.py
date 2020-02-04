@@ -114,6 +114,18 @@ if __name__ == '__main__':
         0b00100
     )
     lcd.create_char(4, bitmap_loading)
+
+    bitmap_error = (
+        0b00000,
+        0b01110,
+        0b10101,
+        0b10101,
+        0b10101,
+        0b01110,
+        0b00000,
+        0b00000
+    )
+    lcd.create_char(4, bitmap_error)
     
 
     pv_icon = '\x01'
@@ -122,6 +134,7 @@ if __name__ == '__main__':
     arrow_left_icon = '\x03'
     grid_icon = '\x02'
     loading_icon = '\x04'
+    error_icon = '\x05'
 
     if 'SOLAREDGE_API_KEY' in os.environ:
         SOLAREDGE_API_KEY = os.environ['SOLAREDGE_API_KEY']
@@ -253,11 +266,8 @@ if __name__ == '__main__':
                 lcd.write_string(line)
         except requests.exceptions.HTTPError as e:
             logger.error("Unexpected HTTP error: %s", str(e))
-            status_code = e.response.status_code
-            lcd.clear()
-            lcd.auto_linebreaks = True
-            lcd.write_string(f'HTTP error: {status_code}')
-            error = e
+            lcd.home()
+            lcd.write_string(error_icon)
             exponential_backoff = min(exponential_backoff*2,16)
             logger.info(f'Increased exponential backoff: {exponential_backoff}')
         except Exception as e:
