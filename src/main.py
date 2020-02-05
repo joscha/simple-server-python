@@ -212,7 +212,7 @@ if __name__ == '__main__':
             pv_active = currentPowerFlow["PV"]["status"].lower() == 'active'
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
-            if DIMENSIONS == '20x4' and (last_update is None or (is_day and (datetime.now(tzlocal()) - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60)):
+            if DIMENSIONS == '20x4' and (last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60)):
                 overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
                 logger.debug('overview:')
                 logger.debug(overview)
