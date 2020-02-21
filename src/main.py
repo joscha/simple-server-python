@@ -185,6 +185,7 @@ if __name__ == '__main__':
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
         today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
         today_ss = sun.get_local_sunset_time(datetime.today())
+        tomorrow_sr = today_sr = sun.get_local_sunrise_time(datetime.today() + timedelta(1))
         is_night = now < today_sr or now > today_ss
         is_day = not is_night
         day_hours = round((today_ss - today_sr).total_seconds() / 3600)
@@ -212,17 +213,21 @@ if __name__ == '__main__':
             pv_active = currentPowerFlow["PV"]["status"].lower() == 'active'
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
-            if DIMENSIONS == '20x4' and (last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60)):
-                overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
-                logger.debug('overview:')
-                logger.debug(overview)
-                day_kWh = overview["lastDayData"]["energy"] / 1000
-                logger.debug(f'  day kWh: {day_kWh}')
-                month_kWh = overview["lastMonthData"]["energy"] / 1000
-                logger.debug(f'month kWh: {month_kWh}')
-                year_kWh = overview["lastYearData"]["energy"] / 1000
-                logger.debug(f' year kWh: {year_kWh}')
-                last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
+            if DIMENSIONS == '20x4':
+                if is_night and now.time() < tomorrow_sr.time():
+                    # reset the day KW at midnight
+                    day_kWh = 0
+                elif last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
+                    overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
+                    logger.debug('overview:')
+                    logger.debug(overview)
+                    day_kWh = overview["lastDayData"]["energy"] / 1000
+                    logger.debug(f'  day kWh: {day_kWh}')
+                    month_kWh = overview["lastMonthData"]["energy"] / 1000
+                    logger.debug(f'month kWh: {month_kWh}')
+                    year_kWh = overview["lastYearData"]["energy"] / 1000
+                    logger.debug(f' year kWh: {year_kWh}')
+                    last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
 
             pv_to_house = ' '
             house_to_grid = ' '
