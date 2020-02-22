@@ -185,7 +185,7 @@ if __name__ == '__main__':
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
         today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
         today_ss = sun.get_local_sunset_time(datetime.today())
-        tomorrow_sr = today_sr = sun.get_local_sunrise_time(datetime.today() + timedelta(1))
+        tomorrow_sr = sun.get_local_sunrise_time(datetime.today() + timedelta(1))
         is_night = now < today_sr or now > today_ss
         is_day = not is_night
         day_hours = round((today_ss - today_sr).total_seconds() / 3600)
