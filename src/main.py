@@ -1,10 +1,9 @@
 from RPLCD.i2c import CharLCD
 import solaredge
 import os
-import time
 import requests
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from suntime import Sun
 from dateutil.tz import tzlocal
 import re
@@ -221,7 +220,7 @@ if __name__ == '__main__':
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
             if DIMENSIONS == '20x4':
-                if is_time_between(time.time(0,00), time.time(1,00), now.time()):
+                if is_time_between(time(0), time(1), now.time()):
                     # reset the day KW at midnight
                     day_kWh = 0
                 elif last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
