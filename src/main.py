@@ -185,7 +185,6 @@ if __name__ == '__main__':
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
         today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
         today_ss = sun.get_local_sunset_time(datetime.today())
-        tomorrow_sr = sun.get_local_sunrise_time(datetime.today() + timedelta(1))
         is_night = now < today_sr or now > today_ss
         is_day = not is_night
         day_hours = round((today_ss - today_sr).total_seconds() / 3600)
@@ -214,7 +213,7 @@ if __name__ == '__main__':
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
             if DIMENSIONS == '20x4':
-                if is_night and now.time() < tomorrow_sr.time():
+                if is_time_between(time(0,00), time(1,00), now.time()):
                     # reset the day KW at midnight
                     day_kWh = 0
                 elif last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
@@ -301,3 +300,11 @@ if __name__ == '__main__':
         logger.info(f"Sleeping for {secs_to_sleep} seconds...")
         time.sleep(secs_to_sleep)
     lcd.close()
+
+def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current UTC time
+    check_time = check_time or datetime.utcnow().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
