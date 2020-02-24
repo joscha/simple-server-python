@@ -221,7 +221,7 @@ if __name__ == '__main__':
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
             if DIMENSIONS == '20x4':
-                if is_time_between(time(0,00), time(1,00), now.time()):
+                if is_time_between(time.time(0,00), time.time(1,00), now.time()):
                     # reset the day KW at midnight
                     day_kWh = 0
                 elif last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
