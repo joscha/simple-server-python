@@ -3,6 +3,7 @@ import solaredge
 import os
 import requests
 import sys
+from time import sleep
 from datetime import datetime, timedelta, time
 from suntime import Sun
 from dateutil.tz import tzlocal
@@ -305,5 +306,5 @@ if __name__ == '__main__':
         # so we need to throttle the updates...
         secs_to_sleep = round(24*60*60/(MAX_SERVICE_CALLS_PER_DAY - extra_calls_per_day) * exponential_backoff)
         logger.info(f"Sleeping for {secs_to_sleep} seconds...")
-        time.sleep(secs_to_sleep)
+        sleep(secs_to_sleep)
     lcd.close()
