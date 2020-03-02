@@ -179,6 +179,13 @@ if __name__ == '__main__':
         sys.exit(1)
     sun = Sun(float(LATITUDE), float(LONGITUDE))
 
+    if 'TIMEZONE' in os.environ:
+        TIMEZONE = os.environ['TIMEZONE']
+    else:
+        lcd.clear()
+        lcd.write_string('TIMEZONE missing')
+        sys.exit(1)
+
     lcd.clear()
     error = None
     exponential_backoff=1
@@ -191,11 +198,11 @@ if __name__ == '__main__':
     while True:
         now = datetime.now(tzlocal())
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
-        today_sr = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
-        today_ss = sun.get_local_sunset_time(datetime.today())
-        is_night = now < today_sr or now > today_ss
+        past_sunrise = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
+        today_sunset = sun.get_local_sunset_time(datetime.today())
+        is_night = now < past_sunrise or now > today_sunset
         is_day = not is_night
-        day_hours = round((today_ss - today_sr).total_seconds() / 3600)
+        day_hours = round((today_sunset - past_sunrise).total_seconds() / 3600)
 
         try:
             if backlight_mode == 'night':
@@ -224,7 +231,7 @@ if __name__ == '__main__':
                 if is_time_between(time(0), time(1), now.time()):
                     # reset the day KW at midnight
                     day_kWh = 0
-                elif last_update is None or (is_day and (datetime.now() - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
+                elif last_update is None or (is_day and (now - last_update).seconds > OVERVIEW_INTERVAL_MINUTES*60):
                     overview = s.get_overview(SOLAREDGE_SITE_ID)["overview"]
                     logger.debug('overview:')
                     logger.debug(overview)
@@ -234,7 +241,8 @@ if __name__ == '__main__':
                     logger.debug(f'month kWh: {month_kWh}')
                     year_kWh = overview["lastYearData"]["energy"] / 1000
                     logger.debug(f' year kWh: {year_kWh}')
-                    last_update = datetime.strptime(overview["lastUpdateTime"], '%Y-%m-%d %H:%M:%S')
+                    lastUpdateTime = overview["lastUpdateTime"]
+                    last_update = datetime.strptime("#{lastUpdateTime} #{TIMEZONE}", '%Y-%m-%d %H:%M:%S %Z')
 
             pv_to_house = ' '
             house_to_grid = ' '
