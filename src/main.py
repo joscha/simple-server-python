@@ -242,7 +242,7 @@ if __name__ == '__main__':
                     year_kWh = overview["lastYearData"]["energy"] / 1000
                     logger.debug(f' year kWh: {year_kWh}')
                     lastUpdateTime = overview["lastUpdateTime"]
-                    last_update = datetime.strptime("#{lastUpdateTime} #{TIMEZONE}", '%Y-%m-%d %H:%M:%S %Z')
+                    last_update = datetime.strptime(f'{lastUpdateTime} {TIMEZONE}', '%Y-%m-%d %H:%M:%S %Z')
 
             pv_to_house = ' '
             house_to_grid = ' '
