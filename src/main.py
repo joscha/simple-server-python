@@ -197,9 +197,12 @@ if __name__ == '__main__':
 
     while True:
         now = datetime.now(tzlocal())
+        logger.debug(f'current date and time: {now}')
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
         past_sunrise = sun.get_local_sunrise_time(datetime.today() - timedelta(1))
+        logger.debug(f'sunrise is: {past_sunrise}')
         today_sunset = sun.get_local_sunset_time(datetime.today())
+        logger.debug(f'sunset is: {today_sunset}')
         is_night = now < past_sunrise or now > today_sunset
         is_day = not is_night
         day_hours = round((today_sunset - past_sunrise).total_seconds() / 3600)
@@ -228,6 +231,7 @@ if __name__ == '__main__':
             pv_kW = currentPowerFlow["PV"]["currentPower"]
 
             if DIMENSIONS == '20x4':
+                logger.debug(f'last update was: {last_update}')
                 if is_time_between(time(0), time(1), now.time()):
                     # reset the day KW at midnight
                     day_kWh = 0
@@ -243,6 +247,8 @@ if __name__ == '__main__':
                     logger.debug(f' year kWh: {year_kWh}')
                     lastUpdateTime = overview["lastUpdateTime"]
                     last_update = datetime.strptime(f'{lastUpdateTime}{TIMEZONE}', '%Y-%m-%d %H:%M:%S%z')
+                else:
+                    logger.debug(f'not time to update yet.')
 
             pv_to_house = ' '
             house_to_grid = ' '
