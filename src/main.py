@@ -248,7 +248,10 @@ if __name__ == '__main__':
                     lastUpdateTime = overview["lastUpdateTime"]
                     last_update = datetime.strptime(f'{lastUpdateTime}{TIMEZONE}', '%Y-%m-%d %H:%M:%S%z')
                 else:
-                    logger.debug(f'not time to update yet.')
+                    logger.debug(f'not time to update yet:')
+                    logger.debug(f'is day:          {is_day}')
+                    logger.debug(f'seconds:         {(now - last_update).seconds}')
+                    logger.debug(f'seconds to wait: {OVERVIEW_INTERVAL_MINUTES*60}')
 
             pv_to_house = ' '
             house_to_grid = ' '
