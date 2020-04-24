@@ -299,6 +299,8 @@ if __name__ == '__main__':
                 lcd.cursor_pos = (num,0)
                 line = line[:cols]
                 lcd.write_string(line)
+            # everything was fine; reset exponential backoff
+            exponential_backoff=1
         except requests.exceptions.HTTPError as e:
             logger.error("Unexpected HTTP error: %s", str(e))
             lcd.home()
