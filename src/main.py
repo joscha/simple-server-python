@@ -198,15 +198,13 @@ if __name__ == '__main__':
     while True:
         now = datetime.now(timezone.utc)
         logger.debug(f'current date and time: {now}')
-        midnight = datetime.combine(datetime.today(), datetime.min.time())
-        # We get the day before today and then its sunrise, which is the sunrise leading up to now
-        past_sunrise = sun.get_sunrise_time(midnight - timedelta(1))
-        logger.debug(f'sunrise is: {past_sunrise}')
-        today_sunset = sun.get_sunset_time(midnight)
+        today_sunrise = sun.get_sunrise_time()
+        logger.debug(f'sunrise is: {today_sunrise}')
+        today_sunset = sun.get_sunset_time()
         logger.debug(f'sunset is: {today_sunset}')
-        is_night = now < past_sunrise or now > today_sunset
+        is_night = now < today_sunrise or now > today_sunset
         is_day = not is_night
-        day_hours = round((today_sunset - past_sunrise).total_seconds() / 3600)
+        day_hours = round((today_sunset - today_sunrise).total_seconds() / 3600)
 
         try:
             if backlight_mode == 'night':
