@@ -4,7 +4,7 @@ import os
 import requests
 import sys
 from time import sleep
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, timezone
 from suntime import Sun
 from dateutil.tz import tzlocal
 import re
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     last_update = None
 
     while True:
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         logger.debug(f'current date and time: {now}')
         midnight = datetime.combine(datetime.today(), datetime.min.time())
         # We get the day before today and then its sunrise, which is the sunrise leading up to now
