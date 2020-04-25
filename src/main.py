@@ -200,7 +200,7 @@ if __name__ == '__main__':
         logger.debug(f'current date and time: {now}')
         today_sunrise = sun.get_sunrise_time()
         logger.debug(f'sunrise is: {today_sunrise}')
-        today_sunset = sun.get_sunset_time(now)
+        today_sunset = sun.get_sunset_time(now + timedelta(1))
         logger.debug(f'sunset is: {today_sunset}')
         is_night = now < today_sunrise or now > today_sunset
         is_day = not is_night
