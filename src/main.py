@@ -196,7 +196,7 @@ if __name__ == '__main__':
     year_kWh = None
     last_update = None
 
-    local_now = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    local_now = datetime.now(pytz.timezone('Australia/Sydney'))
     TIMEZONE = local_now.strftime('%z')
     tz_hours = local_now.utcoffset().total_seconds()/60/60
 
