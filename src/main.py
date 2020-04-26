@@ -9,6 +9,7 @@ from suntime import Sun
 from dateutil.tz import tzlocal
 import re
 import logging
+import pytz
 
 MAX_SERVICE_CALLS_PER_DAY=300
 OVERVIEW_INTERVAL_MINUTES=15
@@ -195,7 +196,9 @@ if __name__ == '__main__':
     year_kWh = None
     last_update = None
 
-    tz_hours = int(int(TIMEZONE) / 100)
+    local_now = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+    TIMEZONE = local_now.strftime('%z')
+    tz_hours = local_now.utcoffset().total_seconds()/60/60
 
     while True:
         now = datetime.now(timezone.utc)
