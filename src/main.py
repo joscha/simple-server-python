@@ -198,7 +198,7 @@ if __name__ == '__main__':
     while True:
         now = datetime.now(timezone.utc)
         logger.debug(f'current date and time: {now}')
-        today_sunrise = sun.get_sunrise_time()
+        today_sunrise = sun.get_sunrise_time(now - timedelta(1))
         logger.debug(f'sunrise is: {today_sunrise}')
         today_sunset = sun.get_sunset_time(now + timedelta(1))
         logger.debug(f'sunset is: {today_sunset}')
