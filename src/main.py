@@ -195,14 +195,16 @@ if __name__ == '__main__':
     year_kWh = None
     last_update = None
 
+    tz_hours = int(int(TIMEZONE) / 100)
+
     while True:
         now = datetime.now(timezone.utc)
         logger.debug(f'current date and time: {now}')
         # TODO: use TZ here
-        today_sunrise = sun.get_sunrise_time(now + timedelta(0,0,0,0,0,11) - timedelta(1))
+        today_sunrise = sun.get_sunrise_time(now + timedelta(0,0,0,0,0,tz_hours) - timedelta(1))
         logger.debug(f'sunrise is: {today_sunrise}')
         # TODO: use TZ here
-        today_sunset = sun.get_sunset_time(now + timedelta(0,0,0,0,0,11))
+        today_sunset = sun.get_sunset_time(now + timedelta(0,0,0,0,0,tz_hours))
         logger.debug(f'sunset is: {today_sunset}')
         is_night = now < today_sunrise or now > today_sunset
         is_day = not is_night
