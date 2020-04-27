@@ -42,9 +42,15 @@ if __name__ == '__main__':
         logger.debug("Dimension defaulted to 16x2")
         DIMENSIONS = '16x2'
 
+    if 'DISPLAY_ADDRESS_HEX' in os.environ:
+        DISPLAY_ADDRESS = int(os.environ['DISPLAY_ADDRESS_HEX'],16)
+    else:
+        logger.error('DISPLAY_ADDRESS_HEX missing')
+        sys.exit(1)
+
     cols, rows = [int(n) for n in DIMENSIONS.split('x')]
 
-    lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1,
+    lcd = CharLCD(i2c_expander='PCF8574', address=DISPLAY_ADDRESS, port=1,
               cols=cols, rows=rows, dotsize=8,
               charmap='A02',
               auto_linebreaks=True,
@@ -196,8 +202,8 @@ if __name__ == '__main__':
     year_kWh = None
     last_update = None
 
-    local_now = datetime.now(pytz.timezone('Australia/Sydney'))
-    TIMEZONE = local_now.strftime('%z')
+    local_now = datetime.now(pytz.timezone(TIMEZONE))
+    tz_string = local_now.strftime('%z')
     tz_hours = local_now.utcoffset().total_seconds()/60/60
 
     while True:
@@ -252,7 +258,7 @@ if __name__ == '__main__':
                     year_kWh = overview["lastYearData"]["energy"] / 1000
                     logger.debug(f' year kWh: {year_kWh}')
                     lastUpdateTime = overview["lastUpdateTime"]
-                    last_update = datetime.strptime(f'{lastUpdateTime}{TIMEZONE}', '%Y-%m-%d %H:%M:%S%z')
+                    last_update = datetime.strptime(f'{lastUpdateTime}{tz_string}', '%Y-%m-%d %H:%M:%S%z')
                 else:
                     logger.debug(f'not time to update yet:')
                     logger.debug(f'is day:          {is_day}')
